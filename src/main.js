@@ -5,21 +5,20 @@ import 'izitoast/dist/css/iziToast.min.css';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-import errorImage from './img/error.svg';
 import { serviceImages } from './js/pixabay-api';
 import {
   createMarkUp,
   showLoadingMessage,
   hideLoadingMessage,
+  showEror,
 } from './js/render-functions';
 
 const form = document.querySelector('.form');
 const gallery = document.querySelector('.gallery');
 const loadingMessage = document.querySelector('.loading-message');
 const loadMore = document.querySelector('.js-load-more');
-
 form.addEventListener('submit', handleSearch);
-// loadMore.addEventListener('click', onLoadMore);
+loadMore.addEventListener('click', onLoadMore);
 let search = '';
 let page = 1;
 
@@ -29,72 +28,65 @@ function handleSearch(event) {
   searchImages();
 }
 
-// serviceImages(search, page)
-//   .then(data => {
-//     console.log(data);
-//     console.log(Math.ceil(data.totalHits / 15)); //total page
-//   })
-//   .catch(error => console.log(error.message));
-
 function searchImages() {
   showLoadingMessage(loadingMessage);
 
   serviceImages(search, page)
     .then(data => {
       hideLoadingMessage(loadingMessage);
-      gallery.insertAdjacentHTML('beforeend', createMarkUp(data.hits));
+      if (data.hits.length === 0) {
+        loadMore.classList.replace('load-more', 'load-more-hidden');
+        gallery.innerHTML = '';
+        showEror(
+          'Sorry, there are no images matching your search query. Please try again!'
+        );
+      } else {
+        gallery.innerHTML = createMarkUp(data.hits);
+        galleryLightbox.refresh();
+      }
       if (page < Math.ceil(data.totalHits / 15)) {
         loadMore.classList.replace('load-more-hidden', 'load-more');
       }
     })
-    .catch(error => alert(error.message));
+    .catch(error => {
+      hideLoadingMessage(loadingMessage);
+      showEror(error.message);
+    })
+    .finally(() => {
+      setTimeout(() => {
+        form.reset();
+      }, 1000);
+    });
 }
 
-// function searchImages() {
-//   showLoadingMessage(loadingMessage);
-
-//   fetchImages(search)
-//     .then(data => {
-//       hideLoadingMessage(loadingMessage);
-//       if (data.hits.length === 0) {
-//         gallery.innerHTML = '';
-
-//         iziToast.show({
-//           title: '',
-//           iconUrl: `${errorImage}`,
-//           message:
-//             'Sorry, there are no images matching your search query. Please try again!',
-//           messageColor: 'white',
-//           messageSize: '16px',
-//           backgroundColor: 'red',
-//           position: 'topRight',
-//         });
-//       } else {
-//         gallery.innerHTML = createMarkUp(data.hits);
-//         galleryLightbox.refresh();
-//       }
-//     })
-//     .catch(error => {
-//       hideLoadingMessage(loadingMessage);
-//       console.log(error.message);
-//       iziToast.show({
-//         title: 'Error',
-//         iconUrl: `${errorImage}`,
-//         message: 'The link provided is incorrect.',
-//         messageColor: 'white',
-//         messageSize: '18px',
-//         backgroundColor: 'red',
-//         position: 'topRight',
-//       });
-//     })
-//     .finally(() => {
-//       setTimeout(() => {
-//         form.reset();
-//       }, 1000);
-//     });
-// }
-
-//
+async function onLoadMore() {
+  page++;
+  loadMore.disabled = true;
+  try {
+    const data = await serviceImages(search, page);
+    gallery.insertAdjacentHTML('beforeend', createMarkUp(data.hits));
+    galleryLightbox.refresh();
+    if (page >= Math.ceil(data.totalHits / 15)) {
+      loadMore.classList.replace('load-more', 'load-more-hidden');
+      //користувач дійшов до кінця колекції!
+      setTimeout(() => {
+        showEror("We're sorry, but you've reached the end of search results.");
+      }, 2000);
+    }
+    //scroll:
+    const img = document.querySelector('.gallery-item');
+    const imgHeight = Math.ceil(img.getBoundingClientRect().height);
+    window.scrollBy({
+      left: 0,
+      top: imgHeight * 2,
+      behavior: 'smooth',
+    });
+  } catch (error) {
+    showEror(error.message);
+  } finally {
+    loadMore.disabled = false;
+  }
+}
 
 // Ініціалізація SimpleLightbox
 let galleryLightbox = new SimpleLightbox('.gallery a', {
@@ -104,6 +96,6 @@ let galleryLightbox = new SimpleLightbox('.gallery a', {
   captionPosition: 'bottom',
 });
 
-galleryLightbox.on('error.simplelightbox', function (e) {
-  console.log(e);
+galleryLightbox.on('error.simplelightbox', function (error) {
+  showEror(error);
 });

@@ -50,7 +50,7 @@ h2 {
   flex-wrap: wrap;
   gap: 24px 24px;
   margin: 0 auto;
-  width: 1132px;
+  width: 1133px;
   margin-bottom: 32px;
 }
 .gallery-item {
@@ -59,6 +59,19 @@ h2 {
   border-left: 1px solid #808080;
   border-right: 1px solid #808080;
 }
+@media (max-width: 1024px) {
+  .gallery-item {
+    width: calc(360px * 0.7); /* Зменшуємо ширину на 30% */
+    height: calc(200px * 0.7); /* Зменшуємо висоту на 30% */
+  }
+}
+@media (max-width: 768px) {
+  .gallery-item {
+    width: calc(360px * 0.7); /* Зменшуємо ширину на 30% */
+    height: calc(200px * 0.7); /* Зменшуємо висоту на 30% */
+  }
+}
+
 .gallery-link {
   display: block;
   width: 360px;
@@ -170,4 +183,5 @@ h2 {
 .load-more.btn {
   display: inline-block;
   transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+  margin-bottom: 32px;
 }

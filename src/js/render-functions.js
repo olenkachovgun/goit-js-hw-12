@@ -1,3 +1,6 @@
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
+import errorImage from '../img/error.svg';
 export function createMarkUp(arr) {
   return arr
     .map(
@@ -39,4 +42,16 @@ export function showLoadingMessage(loadingMessage) {
 
 export function hideLoadingMessage(loadingMessage) {
   loadingMessage.style.display = 'none';
+}
+
+export function showEror(error) {
+  iziToast.show({
+    title: '',
+    iconUrl: `${errorImage}`,
+    message: `${error}`,
+    messageColor: 'white',
+    messageSize: '18px',
+    backgroundColor: 'red',
+    position: 'topRight',
+  });
 }
