@@ -51,6 +51,7 @@ h2 {
   gap: 24px 24px;
   margin: 0 auto;
   width: 1132px;
+  margin-bottom: 32px;
 }
 .gallery-item {
   position: relative;
@@ -153,4 +154,20 @@ h2 {
   100% {
     transform: rotate(360deg);
   }
+}
+/* Button Load more */
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.js-load-more.btn {
+  width: 125px;
+}
+.load-more-hidden {
+  display: none;
+}
+.load-more.btn {
+  display: inline-block;
+  transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
 }

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
@@ -5,7 +6,7 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
 import errorImage from './img/error.svg';
-import { fetchImages } from './js/pixabay-api';
+import { serviceImages } from './js/pixabay-api';
 import {
   createMarkUp,
   showLoadingMessage,
@@ -15,9 +16,12 @@ import {
 const form = document.querySelector('.form');
 const gallery = document.querySelector('.gallery');
 const loadingMessage = document.querySelector('.loading-message');
-let search = '';
+const loadMore = document.querySelector('.js-load-more');
 
 form.addEventListener('submit', handleSearch);
+// loadMore.addEventListener('click', onLoadMore);
+let search = '';
+let page = 1;
 
 function handleSearch(event) {
   event.preventDefault();
@@ -25,49 +29,72 @@ function handleSearch(event) {
   searchImages();
 }
 
+// serviceImages(search, page)
+//   .then(data => {
+//     console.log(data);
+//     console.log(Math.ceil(data.totalHits / 15)); //total page
+//   })
+//   .catch(error => console.log(error.message));
+
 function searchImages() {
   showLoadingMessage(loadingMessage);
 
-  fetchImages(search)
+  serviceImages(search, page)
     .then(data => {
       hideLoadingMessage(loadingMessage);
-      if (data.hits.length === 0) {
-        gallery.innerHTML = '';
-
-        iziToast.show({
-          title: '',
-          iconUrl: `${errorImage}`,
-          message:
-            'Sorry, there are no images matching your search query. Please try again!',
-          messageColor: 'white',
-          messageSize: '16px',
-          backgroundColor: 'red',
-          position: 'topRight',
-        });
-      } else {
-        gallery.innerHTML = createMarkUp(data.hits);
-        galleryLightbox.refresh();
+      gallery.insertAdjacentHTML('beforeend', createMarkUp(data.hits));
+      if (page < Math.ceil(data.totalHits / 15)) {
+        loadMore.classList.replace('load-more-hidden', 'load-more');
       }
     })
-    .catch(error => {
-      hideLoadingMessage(loadingMessage);
-      console.log(error.message);
-      iziToast.show({
-        title: 'Error',
-        iconUrl: `${errorImage}`,
-        message: 'The link provided is incorrect.',
-        messageColor: 'white',
-        messageSize: '18px',
-        backgroundColor: 'red',
-        position: 'topRight',
-      });
-    })
-    .finally(() => {
-      setTimeout(() => {
-        form.reset();
-      }, 1000);
-    });
+    .catch(error => alert(error.message));
 }
+
+// function searchImages() {
+//   showLoadingMessage(loadingMessage);
+
+//   fetchImages(search)
+//     .then(data => {
+//       hideLoadingMessage(loadingMessage);
+//       if (data.hits.length === 0) {
+//         gallery.innerHTML = '';
+
+//         iziToast.show({
+//           title: '',
+//           iconUrl: `${errorImage}`,
+//           message:
+//             'Sorry, there are no images matching your search query. Please try again!',
+//           messageColor: 'white',
+//           messageSize: '16px',
+//           backgroundColor: 'red',
+//           position: 'topRight',
+//         });
+//       } else {
+//         gallery.innerHTML = createMarkUp(data.hits);
+//         galleryLightbox.refresh();
+//       }
+//     })
+//     .catch(error => {
+//       hideLoadingMessage(loadingMessage);
+//       console.log(error.message);
+//       iziToast.show({
+//         title: 'Error',
+//         iconUrl: `${errorImage}`,
+//         message: 'The link provided is incorrect.',
+//         messageColor: 'white',
+//         messageSize: '18px',
+//         backgroundColor: 'red',
+//         position: 'topRight',
+//       });
+//     })
+//     .finally(() => {
+//       setTimeout(() => {
+//         form.reset();
+//       }, 1000);
+//     });
+// }
+
+//
 
 // Ініціалізація SimpleLightbox
 let galleryLightbox = new SimpleLightbox('.gallery a', {
