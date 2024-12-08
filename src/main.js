@@ -23,10 +23,19 @@ let search = '';
 let page = 1;
 
 function handleSearch(event) {
-  page = 1;
-  gallery.innerHTML = '';
   event.preventDefault();
   search = event.target.elements.search.value.trim();
+
+  if (search.length === 0) {
+    showEror(
+      'Sorry, there are no images matching your search query. Please try again!'
+    );
+    gallery.innerHTML = '';
+    loadMore.classList.replace('load-more', 'load-more-hidden');
+    return;
+  }
+  page = 1;
+  gallery.innerHTML = '';
   searchImages();
 }
 
