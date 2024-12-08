@@ -23,6 +23,8 @@ let search = '';
 let page = 1;
 
 function handleSearch(event) {
+  page = 1;
+  gallery.innerHTML = '';
   event.preventDefault();
   search = event.target.elements.search.value.trim();
   searchImages();
@@ -50,6 +52,7 @@ function searchImages() {
     })
     .catch(error => {
       hideLoadingMessage(loadingMessage);
+      gallery.innerHTML = '';
       showEror(error.message);
     })
     .finally(() => {
@@ -61,6 +64,7 @@ function searchImages() {
 
 async function onLoadMore() {
   page++;
+
   loadMore.disabled = true;
   try {
     const data = await serviceImages(search, page);
