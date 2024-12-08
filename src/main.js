@@ -28,7 +28,9 @@ function handleSearch(event) {
 
   if (search.length === 0) {
     showEror(
-      'Sorry, there are no images matching your search query. Please try again!'
+      'Sorry, there are no images matching your search query. Please try again!',
+      'Warning',
+      '#ffa000'
     );
     gallery.innerHTML = '';
     form.reset();
@@ -84,7 +86,11 @@ async function onLoadMore() {
       loadMore.classList.replace('load-more', 'load-more-hidden');
       //користувач дійшов до кінця колекції!
       setTimeout(() => {
-        showEror("We're sorry, but you've reached the end of search results.");
+        showEror(
+          "We're sorry, but you've reached the end of search results.",
+          'Warning',
+          '#ffa000'
+        );
       }, 2000);
     }
     //scroll:

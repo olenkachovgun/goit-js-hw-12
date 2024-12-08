@@ -44,14 +44,14 @@ export function hideLoadingMessage(loadingMessage) {
   loadingMessage.style.display = 'none';
 }
 
-export function showEror(error) {
+export function showEror(error, title = 'Error', color = 'red') {
   iziToast.show({
-    title: '',
+    title: `${title}`,
     iconUrl: `${errorImage}`,
     message: `${error}`,
     messageColor: 'white',
     messageSize: '18px',
-    backgroundColor: 'red',
+    backgroundColor: `${color}`,
     position: 'topRight',
   });
 }
