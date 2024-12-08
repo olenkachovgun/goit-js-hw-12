@@ -31,6 +31,7 @@ function handleSearch(event) {
       'Sorry, there are no images matching your search query. Please try again!'
     );
     gallery.innerHTML = '';
+    form.reset();
     loadMore.classList.replace('load-more', 'load-more-hidden');
     return;
   }

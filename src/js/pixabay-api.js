@@ -12,6 +12,5 @@ export async function serviceImages(search, page = 1) {
       per_page: 15,
     },
   });
-
   return data;
 }
